@@ -1,0 +1,51 @@
+
+version: "3"
+
+services:
+  # Database
+  db:
+    platform: linux/x86_64
+    image: mysql:5.7
+    container_name: mysql
+    volumes:
+      - data:/var/lib/mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: G1Z8ORTBdD1F
+      MYSQL_DATABASE: vpn_db
+      MYSQL_PASSWORD: G1Z8ORTBdD1F
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - botnetwork
+
+  # phpmyadmin
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: G1Z8ORTBdD1F
+    networks:
+      - botnetwork
+
+  bot:
+    build: vpn_bot/
+    command: python3 ./start.py
+    ports:
+      - "8444:8444"
+    networks:
+      - botnetwork
+
+
+networks:
+  botnetwork:
+
+volumes:
+  data:
